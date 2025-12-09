@@ -6,23 +6,43 @@
 import type {Config} from 'jest';
 
 const config: Config = {
-  // All imported modules in your tests should be mocked automatically
-  // automock: false,
+  // Test environment for DOM testing
+  testEnvironment: 'jsdom',
 
-  // Stop running tests after `n` failures
-  // bail: 0,
+  // Setup files to run after Jest is initialized
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
 
-  // The directory where Jest should store its cached dependency information
-  // cacheDirectory: "/private/var/folders/24/cmnc20x96f1989v8p2dvyc3r8jkknh/T/jest_4qsmgg",
+  // Module name mapping for path aliases and CSS modules
+  moduleNameMapper: {
+    '^@/(.*)$': '<rootDir>/$1',
+    '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
+  },
+
+  // Transform configuration for TypeScript and JSX
+  transform: {
+    '^.+\\.(ts|tsx|js|jsx)$': ['babel-jest', { presets: ['next/babel'] }],
+  },
+
+  // File extensions to consider
+  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
+  
+  // Ignore transforming node_modules except for ES modules
+  transformIgnorePatterns: [
+    'node_modules/(?!(.*\\.mjs$))',
+  ],
 
   // Automatically clear mock calls, instances, contexts and results before every test
-  // clearMocks: false,
+  clearMocks: true,
 
   // Indicates whether the coverage information should be collected while executing the test
   collectCoverage: true,
 
   // An array of glob patterns indicating a set of files for which coverage information should be collected
-  // collectCoverageFrom: undefined,
+  collectCoverageFrom: [
+    'app/**/*.{ts,tsx}',
+    '!app/**/*.d.ts',
+    '!app/globals.css',
+  ],
 
   // The directory where Jest should output its coverage files
   coverageDirectory: "coverage",
@@ -163,9 +183,10 @@ const config: Config = {
   // ],
 
   // An array of regexp pattern strings that are matched against all test paths, matched tests are skipped
-  // testPathIgnorePatterns: [
-  //   "/node_modules/"
-  // ],
+  testPathIgnorePatterns: [
+    "/node_modules/",
+    "/tests/" // Exclude Playwright tests from Jest
+  ],
 
   // The regexp pattern or array of patterns that Jest uses to detect test files
   // testRegex: [],
